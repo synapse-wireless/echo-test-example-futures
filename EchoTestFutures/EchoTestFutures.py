@@ -47,7 +47,7 @@ PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]
 
 @coroutine
 def main():
-    global replies
+    replies = 0
     """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls"""
     tornado.ioloop.PeriodicCallback(asyncore.poll, 5).start()
     scheduler = apy.ioloop_scheduler.IOLoopScheduler.instance()
