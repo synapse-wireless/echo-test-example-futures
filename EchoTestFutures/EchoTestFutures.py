@@ -27,8 +27,8 @@ SERIAL_TYPE = snap.SERIAL_TYPE_RS232
 
 # If you're on a unix platform, you'll need to specify the interface type differently than windows
 # An example for a typical interface device is shown below
-#SERIAL_PORT = 13 # COM1
-SERIAL_PORT = '/dev/ttyUSB0'
+SERIAL_PORT = 0 # COM1
+#SERIAL_PORT = '/dev/ttyUSB0'
 
 NUMBER_OF_QUERIES = 100 # More polls == longer test
 TIMEOUT = 1.0 # (in seconds) You might need to increase this if:
