@@ -43,11 +43,7 @@ TIMEOUT = 1.0 # (in seconds) You might need to increase this if:
 #PAYLOAD = "A"
 #PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
-PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]})=-!@#$" # this is the biggest payload that will fit (RPC_CRC == OFF, PACKET_CRC == OFF)
-# The only way to get a bigger payload would be to shorten the callback function's name (currently "response_handler")
-# Also note that if you were to turn *ON* the RPC_CRC feature, that would also use up
-# two bytes of each packet, requiring the PAYLOAD string to be shortened by two bytes to compensate.
-replies = 0
+PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]})=-!@#$"
 
 @coroutine
 def main():
