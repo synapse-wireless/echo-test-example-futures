@@ -1,2 +1,1 @@
-snapconnect==3.4.5
 future-snap-connect==4.0.0
