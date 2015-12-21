@@ -47,9 +47,7 @@ PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]
 
 @coroutine
 def main():
-    replies = 0
     """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls"""
-    tornado.ioloop.PeriodicCallback(asyncore.poll, 5).start()
     scheduler = apy.ioloop_scheduler.IOLoopScheduler.instance()
     # Create a SNAP Connect object to do communications (comm) for us
     comm = snap.Snap(scheduler=scheduler, funcs={})
@@ -59,6 +57,7 @@ def main():
 
     bridge_address = yield fsc.open_serial(SERIAL_TYPE, SERIAL_PORT)
     log.info("Bridge connection opened to %s", bridge_address)
+    replies = 0
     start_time = time.time()
     for queries in range(NUMBER_OF_QUERIES):
         result = yield fsc.callback_rpc(bridge_address, 'str', args=(PAYLOAD,), retries=3, timeout=TIMEOUT)
@@ -70,14 +69,12 @@ def main():
     delta = end_time - start_time
     delta *= 1000
     log.info("%d queries, %d responses in %d milliseconds" % (queries+1, replies, delta))
-    my_loop.stop()
 
 
 if __name__ == "__main__":
     global my_loop
     # Notice that because this is a benchmark, we have set logging to of the lowest verbose levels
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    main()
-    my_loop = tornado.ioloop.IOLoop.instance()
-    my_loop.start()
+    #start the IOLoop, run main() and then stop the loop
+    tornado.ioloop.IOLoop.current().run_sync(main)
 
