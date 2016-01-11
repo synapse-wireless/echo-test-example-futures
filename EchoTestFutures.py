@@ -11,12 +11,11 @@ Refer to comments throughout this file, plus the accompanying README.txt.
 
 import apy
 import logging
-import asyncore
 from snapconnect import snap
 from future_snap_connect import FutureSnapConnect
 import time
 import tornado
-from tornado.gen import coroutine
+from tornado.gen import coroutine, Return
 
 log = logging.getLogger('EchoTestFutures')
 # Note the hardcoded COM1 usage.
@@ -45,22 +44,25 @@ TIMEOUT = 1.0 # (in seconds) You might need to increase this if:
 #PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
 PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]})=-!@#$"
 
+
 @coroutine
-def main():
+def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER_OF_QUERIES, payload=PAYLOAD, timeout=TIMEOUT, fsc=None):
     """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls"""
     scheduler = apy.ioloop_scheduler.IOLoopScheduler.instance()
     # Create a SNAP Connect object to do communications (comm) for us
     comm = snap.Snap(scheduler=scheduler, funcs={})
     tornado.ioloop.PeriodicCallback(comm.poll_internals, 5).start()
-    # Get a future snapconnect object
-    fsc = FutureSnapConnect(comm)
-
-    bridge_address = yield fsc.open_serial(SERIAL_TYPE, SERIAL_PORT)
-    log.info("Bridge connection opened to %s", bridge_address)
+    if fsc is None:
+        # Get a future snapconnect object
+        fsc = FutureSnapConnect(comm)
+    bridge_addr = yield fsc.open_serial(port_type, port_no)
+    if bridge_addr is None:
+        raise Exception("Unable to open bridge.")
+    log.info("Bridge connection opened to %s", bridge_addr)
     replies = 0
     start_time = time.time()
-    for queries in range(NUMBER_OF_QUERIES):
-        result = yield fsc.callback_rpc(bridge_address, 'str', args=(PAYLOAD,), retries=3, timeout=TIMEOUT)
+    for queries in range(num_queries):
+        result = yield fsc.callback_rpc(bridge_addr, 'str', args=(payload,), retries=3, timeout=timeout)
         if result != (PAYLOAD,):
             log.error("we did not receive the correct response %r" % result)
         else:
@@ -68,13 +70,14 @@ def main():
     end_time = time.time()
     delta = end_time - start_time
     delta *= 1000
-    log.info("%d queries, %d responses in %d milliseconds" % (queries+1, replies, delta))
+    log.info("%d queries, %d responses in %d milliseconds" % (num_queries, replies, delta))
+    if num_queries == replies:
+        raise Return(True)
+    raise Return(False)
 
 
 if __name__ == "__main__":
-    global my_loop
     # Notice that because this is a benchmark, we have set logging to of the lowest verbose levels
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     #start the IOLoop, run main() and then stop the loop
-    tornado.ioloop.IOLoop.current().run_sync(main)
-
+    tornado.ioloop.IOLoop.current().run_sync(run_echo_test)
