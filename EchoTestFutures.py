@@ -9,12 +9,11 @@ This example demonstrates one way to maximize throughput without choking the net
 Refer to comments throughout this file, plus the accompanying README.txt.
 """
 
-import apy
 import logging
-from snapconnect import snap
-from future_snap_connect import FutureSnapConnect
 import time
 import tornado
+from snapconnect import snap
+from future_snap_connect import FutureSnapConnect
 from tornado.gen import coroutine, Return
 
 log = logging.getLogger('EchoTestFutures')
@@ -51,26 +50,38 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER
     scheduler = apy.ioloop_scheduler.IOLoopScheduler.instance()
     # Create a SNAP Connect object to do communications (comm) for us
     comm = snap.Snap(scheduler=scheduler, funcs={})
+
+    # give tornado our internal snapconnect poller
     tornado.ioloop.PeriodicCallback(comm.poll_internals, 5).start()
     if fsc is None:
-        # Get a future snapconnect object
+        # Get a future snapconnect object if they didn't pass one in
         fsc = FutureSnapConnect(comm)
+
+    # open our bridge node serial port
     bridge_addr = yield fsc.open_serial(port_type, port_no)
     if bridge_addr is None:
         raise Exception("Unable to open bridge.")
     log.info("Bridge connection opened to %s", bridge_addr)
+
+    # set up to start sending queries to our bridge node
     replies = 0
+    # start the clock!
     start_time = time.time()
+    # start sending queries
     for queries in range(num_queries):
+        # we'll use the built in 'str' func to call back
         result = yield fsc.callback_rpc(bridge_addr, 'str', args=(payload,), retries=3, timeout=timeout)
         if result != (PAYLOAD,):
             log.error("we did not receive the correct response %r" % result)
         else:
             replies += 1
+
+    # how long did it take?
     end_time = time.time()
     delta = end_time - start_time
     delta *= 1000
-    log.info("%d queries, %d responses in %d milliseconds" % (num_queries, replies, delta))
+    print ("%d queries, %d responses in %d milliseconds" % (num_queries, replies, delta))
+    # did we get the number of responses we were expecting?
     if num_queries == replies:
         raise Return(True)
     raise Return(False)
@@ -79,5 +90,8 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER
 if __name__ == "__main__":
     # Notice that because this is a benchmark, we have set logging to of the lowest verbose levels
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    #start the IOLoop, run main() and then stop the loop
-    tornado.ioloop.IOLoop.current().run_sync(run_echo_test)
+    #start the IOLoop, run_echo_test() and then stop the loop
+    if tornado.ioloop.IOLoop.current().run_sync(run_echo_test):
+        print ("SUCCESS!")
+    else:
+        print ("FAILED")
