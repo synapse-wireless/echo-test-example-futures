@@ -1,4 +1,4 @@
-# (c) Copyright 2014 Synapse Wireless, Inc.
+# (c) Copyright 2016 Synapse Wireless, Inc.
 """
 EchoTestFutures.py - a simple benchmark used to determine how fast SNAP Connect can
 communicate with a directly connected bridge. We use this to evaluate different
@@ -25,7 +25,7 @@ SERIAL_TYPE = snap.SERIAL_TYPE_RS232
 
 # If you're on a unix platform, you'll need to specify the interface type differently than windows
 # An example for a typical interface device is shown below
-SERIAL_PORT = 0 # COM1
+SERIAL_PORT = 12 # COM1
 #SERIAL_PORT = '/dev/ttyUSB0'
 
 NUMBER_OF_QUERIES = 100 # More polls == longer test
