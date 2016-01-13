@@ -47,12 +47,11 @@ PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]
 @coroutine
 def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER_OF_QUERIES, payload=PAYLOAD, timeout=TIMEOUT, fsc=None):
     """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls"""
-    scheduler = apy.ioloop_scheduler.IOLoopScheduler.instance()
     # Create a SNAP Connect object to do communications (comm) for us
-    comm = snap.Snap(scheduler=scheduler, funcs={})
+    comm = snap.Snap(funcs={})
 
     # give tornado our internal snapconnect poller
-    tornado.ioloop.PeriodicCallback(comm.poll_internals, 5).start()
+    tornado.ioloop.PeriodicCallback(comm.poll, 5).start()
     if fsc is None:
         # Get a future snapconnect object if they didn't pass one in
         fsc = FutureSnapConnect(comm)
