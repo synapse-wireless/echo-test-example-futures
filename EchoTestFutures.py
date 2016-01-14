@@ -20,16 +20,16 @@ log = logging.getLogger('EchoTestFutures')
 # Note the hardcoded COM1 usage.
 # You should set these to match YOUR available hardware
 SERIAL_TYPE = snap.SERIAL_TYPE_RS232
-#SERIAL_TYPE = snap.SERIAL_TYPE_SNAPSTICK100
-#SERIAL_TYPE = snap.SERIAL_TYPE_SNAPSTICK200
+# SERIAL_TYPE = snap.SERIAL_TYPE_SNAPSTICK100
+# SERIAL_TYPE = snap.SERIAL_TYPE_SNAPSTICK200
 
 # If you're on a unix platform, you'll need to specify the interface type differently than windows
 # An example for a typical interface device is shown below
-SERIAL_PORT = 12 # COM1
-#SERIAL_PORT = '/dev/ttyUSB0'
+SERIAL_PORT = 0  # COM1
+# SERIAL_PORT = '/dev/ttyUSB0'
 
-NUMBER_OF_QUERIES = 100 # More polls == longer test
-TIMEOUT = 1.0 # (in seconds) You might need to increase this if:
+NUMBER_OF_QUERIES = 100  # More polls == longer test
+TIMEOUT = 1.0  # (in seconds) You might need to increase this if:
 # 1) You change the RPC call being made
 # If you are invoking some custom function of your own, and it takes longer for the
 # nodes to respond - for example, some function that performs multiple analog readings
@@ -38,26 +38,35 @@ TIMEOUT = 1.0 # (in seconds) You might need to increase this if:
 
 # You could experiment with various size payloads.
 # Note that PAYLOAD is just one of several parameters to the actual RPC call
-#PAYLOAD = "A"
-#PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-#PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
+# PAYLOAD = "A"
+# PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+# PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
 PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]})=-!@#$"
 
 
 @coroutine
-def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER_OF_QUERIES, payload=PAYLOAD, timeout=TIMEOUT, fsc=None):
-    """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls"""
+def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
+                  num_queries=NUMBER_OF_QUERIES, payload=PAYLOAD, timeout=TIMEOUT, scf=None):
+    """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls
+
+    :param port_type: type of serial port eg SERIAL_TYPE_RS232
+    :param port_no: serial port number, could be 0 for COM1 or /dev/ttyS1 in Linux
+    :param num_queries: number of queries you want to make
+    :param payload: payload you want to send in each packet
+    :param timeout: how long to wait if we don't get a response
+    :param scf: snapconnect-future you want to use
+    """
     # Create a SNAP Connect object to do communications (comm) for us
     comm = snap.Snap(funcs={})
 
     # give tornado our internal snapconnect poller
     tornado.ioloop.PeriodicCallback(comm.poll, 5).start()
-    if fsc is None:
+    if scf is None:
         # Get a future snapconnect object if they didn't pass one in
-        fsc = FutureSnapConnect(comm)
+        scf = FutureSnapConnect(comm)
 
     # open our bridge node serial port
-    bridge_addr = yield fsc.open_serial(port_type, port_no)
+    bridge_addr = yield scf.open_serial(port_type, port_no)
     if bridge_addr is None:
         raise Exception("Unable to open bridge.")
     log.info("Bridge connection opened to %s", bridge_addr)
@@ -69,7 +78,7 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER
     # start sending queries
     for queries in range(num_queries):
         # we'll use the built in 'str' func to call back
-        result = yield fsc.callback_rpc(bridge_addr, 'str', args=(payload,), retries=3, timeout=timeout)
+        result = yield scf.callback_rpc(bridge_addr, 'str', args=(payload,), retries=3, timeout=timeout)
         if result != (PAYLOAD,):
             log.error("we did not receive the correct response %r" % result)
         else:
@@ -88,8 +97,9 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT, num_queries=NUMBER
 
 if __name__ == "__main__":
     # Notice that because this is a benchmark, we have set logging to of the lowest verbose levels
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    #start the IOLoop, run_echo_test() and then stop the loop
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    # start the IOLoop, run_echo_test() and then stop the loop
     if tornado.ioloop.IOLoop.current().run_sync(run_echo_test):
         print ("SUCCESS!")
     else:
