@@ -13,7 +13,7 @@ import logging
 import time
 import tornado
 from snapconnect import snap
-from future_snap_connect import FutureSnapConnect
+from snapconnect_futures import SnapConnectFutures
 from tornado.gen import coroutine, Return
 
 log = logging.getLogger('EchoTestFutures')
@@ -62,8 +62,8 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
     # give tornado our internal snapconnect poller
     tornado.ioloop.PeriodicCallback(comm.poll, 5).start()
     if scf is None:
-        # Get a future snapconnect object if they didn't pass one in
-        scf = FutureSnapConnect(comm)
+        # Get a snapconnect-futures object if they didn't pass one in
+        scf = SnapConnectFutures(comm)
 
     # open our bridge node serial port
     bridge_addr = yield scf.open_serial(port_type, port_no)
