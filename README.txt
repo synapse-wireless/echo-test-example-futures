@@ -7,9 +7,9 @@ EchoTestFutures.py - A conversion of the snapconnect echo example to snapconnect
 
 
 Many SNAP Connect applications tend to follow a format where:
-1. create a callback to collect data from a node
-2. send callback rpc to the node and wait
-3. callback collector triggers a chain of events
+1. Create a callback to collect data from a node
+2. Send callback rpc to the node and wait
+3. Callback collector triggers a chain of events
 
 Problem: It can be confusing as to what is actually happening, especially if you are
 viewing source code that you didn't write.
