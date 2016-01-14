@@ -1,9 +1,21 @@
 """
-(c) Copyright 2015 Synapse Wireless, Inc.
+(c) Copyright 2016 Synapse Wireless, Inc.
 
-EchoTestFutures.py - A simple throughput benchmark.
+EchoTestFutures.py - A conversion of the snapconnect echo example to snapconnect-futures
 
 === Background ===
+
+
+Many SNAP Connect applications tend to follow a format where:
+1. Create a callback to collect data from a node
+2. Send callback rpc to the node and wait
+3. Callback collector triggers a chain of events
+
+Problem: It can be confusing as to what is actually happening, especially if you are
+viewing source code that you didn't write.
+
+Solution: Use futures to simulate a more synchronous environment where you can simply
+wait for data to be returned.
 
 Many SNAP Connect applications want to gather data from the remote nodes as quickly
 as possible.
@@ -18,7 +30,7 @@ blindly enqueueing lots of RPC calls just queues them up INSIDE your PC.
 2) Queueing RPC calls based on HOOK_RPC_SENT, but with no regard for incoming replies
 
 If you are sending COMMANDS (no return RPC call), triggering their transmission off
-off the HOOK_RPC_SENT event is sufficient. However, if those outbound RPC calls are
+of the HOOK_RPC_SENT event is sufficient. However, if those outbound RPC calls are
 going to result in INCOMING RPC calls, you need to give the remote nodes a chance to 
 "get a word in edgewise".
 
@@ -49,6 +61,7 @@ and final results displayed. Here is an example:
 
     Permanent license created on 2012-02-14 14:14:45.343000 for 000020
     100 queries, 100 responses in 6903 milliseconds
+    SUCCESS!
 
 For more details, refer to source file EchoTestFutures.py
 """
