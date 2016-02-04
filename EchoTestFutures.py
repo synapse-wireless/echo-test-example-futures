@@ -13,7 +13,7 @@ import logging
 import time
 import tornado
 from snapconnect import snap
-from snapconnect_futures import SnapConnectFutures
+from snapconnect_futures import SnapConnectFutures, SnapConnectFuturesAuto
 from tornado.gen import coroutine, Return
 
 log = logging.getLogger('EchoTestFutures')
@@ -27,6 +27,7 @@ SERIAL_TYPE = snap.SERIAL_TYPE_RS232
 # An example for a typical interface device is shown below
 SERIAL_PORT = 0  # COM1
 # SERIAL_PORT = '/dev/ttyUSB0'
+BRIDGE_NODE = "627d43" # <- Replace this with the address of your bridge node
 
 NUMBER_OF_QUERIES = 100  # More polls == longer test
 TIMEOUT = 1.0  # (in seconds) You might need to increase this if:
@@ -56,21 +57,8 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
     :param timeout: how long to wait if we don't get a response
     :param scf: snapconnect-future you want to use
     """
-    # Create a SNAP Connect object to do communications (comm) for us
-    comm = snap.Snap(funcs={})
 
-    # give tornado our internal snapconnect poller
-    tornado.ioloop.PeriodicCallback(comm.poll, 5).start()
-    if scf is None:
-        # Get a snapconnect-futures object if they didn't pass one in
-        scf = SnapConnectFutures(comm)
-
-    # open our bridge node serial port
-    bridge_addr = yield scf.open_serial(port_type, port_no)
-    if bridge_addr is None:
-        raise Exception("Unable to open bridge.")
-    log.info("Bridge connection opened to %s", bridge_addr)
-
+    scf = yield SnapConnectFuturesAuto(port_id=SERIAL_PORT, port_type=SERIAL_TYPE)
     # set up to start sending queries to our bridge node
     replies = 0
     # start the clock!
@@ -78,7 +66,7 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
     # start sending queries
     for queries in range(num_queries):
         # we'll use the built in 'str' func to call back
-        result = yield scf.callback_rpc(bridge_addr, 'str', args=(payload,), retries=3, timeout=timeout)
+        result = yield scf.callback_rpc(BRIDGE_NODE, 'str', args=(payload,), retries=3, timeout=timeout)
         if result != (PAYLOAD,):
             log.error("we did not receive the correct response %r" % result)
         else:
