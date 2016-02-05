@@ -1,9 +1,7 @@
-"""
-(c) Copyright 2016 Synapse Wireless, Inc.
 
-EchoTestFutures.py - A conversion of the snapconnect echo example to snapconnect-futures
+# EchoTestFutures.py - An echo example using the snapconnect-futures library
 
-=== Background ===
+## Background
 
 
 Many SNAP Connect applications tend to follow a format where:
@@ -34,27 +32,27 @@ of the HOOK_RPC_SENT event is sufficient. However, if those outbound RPC calls a
 going to result in INCOMING RPC calls, you need to give the remote nodes a chance to 
 "get a word in edgewise".
 
-=== Running EchoTestFutures.py ===
+## Running EchoTestFutures.py
 
 All configuration for this example is done by changing hardcoded values near the top
 of the source file, for example:
  
-    What is the address of the SNAP Node you want to test against?
-        This could be your bridge node if you only want to see the effects of the
-        serial interface, or it could be a *remote* SNAP node if you also want to
-        include the effects of Over-The-Air (OTA) radio communications too.
+What is the address of the SNAP Node you want to test against?
+    This could be your bridge node if you only want to see the effects of the
+    serial interface, or it could be a *remote* SNAP node if you also want to
+    include the effects of Over-The-Air (OTA) radio communications too.
 
-    What serial interface do you want to use to reach it?
-        Or in the remote node case, what serial interface to reach the bridge?
+What serial interface do you want to use to reach it?
+    Or in the remote node case, what serial interface to reach the bridge?
 
-    How many test RPC calls do you want to make?
-        Using a higher number of RPC calls will "average out" the time taken to 
-        perform route lookups to the node. This will make the "per-packet"
-        timing more accurate.
+How many test RPC calls do you want to make?
+    Using a higher number of RPC calls will "average out" the time taken to 
+    perform route lookups to the node. This will make the "per-packet"
+    timing more accurate.
     
 Once you have edited EchoTestFutures.py for your available hardware, simply do:
 
-python EchoTestFutures.py
+`python EchoTestFutures.py`
 
 The specified number of queries will be made, incoming responses will be counted,
 and final results displayed. Here is an example:
@@ -64,4 +62,3 @@ and final results displayed. Here is an example:
     SUCCESS!
 
 For more details, refer to source file EchoTestFutures.py
-"""
