@@ -1,24 +1,37 @@
+# EchoTestFutures.py - An echo example using the SNAPconnect Futures library
 
-# EchoTestFutures.py - An echo example using the snapconnect-futures library
+(c) Copyright 2016 Synapse Wireless, Inc.
 
 ## Background
 
 
-Many SNAP Connect applications tend to follow a format where:
-1. Create a callback to collect data from a node
-2. Send callback rpc to the node and wait
-3. Callback collector triggers a chain of events
+Many SNAP Connect applications tend to follow a standard format:
 
-Problem: It can be confusing as to what is actually happening, especially if you are
-viewing source code that you didn't write.
+1. A SNAP Node has some kind of valuable data that needs to be collected. 
+1. Create a callback method to handle collected/polled data from a node.
+1. Send callback rpc to the node and wait for a response.
+1. Response triggers the callback method which kicks off subsequent events.
+1. Repeat ad infinitum.
 
-Solution: Use futures to simulate a more synchronous environment where you can simply
-wait for data to be returned.
+Problem: It can be confusing as to what is actually happening, especially if you 
+are viewing source code that you didn't write.  Traditional implementations are
+very reliant on state-machines since everything has to be event-driven, as well.
+In most cases, as soon as you get past the simplest applications the complexity 
+of your applications will begin to balloon drastically.  Once you add in other
+mechanisms such as retries/timeouts and dropped package handling, it's easy to 
+see how even relatively simple applications can become more complex over time.
+
+Solution: Use Futures to simulate a more synchronous environment where you can 
+simply wait for data to be returned.  SNAP Connect Futures also has built-in 
+retry/timeout mechanisms to help provide more reliable communications with less 
+overhead. This lends itself to creating much more straight-forward code which, 
+in turn, means faster iteration and easier bug-fixes in the future.
+
 
 Many SNAP Connect applications want to gather data from the remote nodes as quickly
 as possible.
 
-Here are some naive approaches that DON'T work well.
+Here are some approaches that DON'T work well.
 
 1) Blindly enqueueing RPC calls
 
