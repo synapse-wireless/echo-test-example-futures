@@ -75,3 +75,7 @@ and final results displayed. Here is an example:
     SUCCESS!
 
 For more details, refer to source file EchoTestFutures.py
+
+## License
+
+Copyright © 2016 [Synapse Wireless](http://www.synapse-wireless.com/), licensed under the [Apache License v2.0](LICENSE.md).
