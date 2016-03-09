@@ -1,6 +1,9 @@
-# EchoTestFutures.py - An echo example using the SNAPconnect Futures library
+[![](https://cloud.githubusercontent.com/assets/1317406/12406044/32cd9916-be0f-11e5-9b18-1547f284f878.png)](http://www.synapse-wireless.com/)
 
-(c) Copyright 2016 Synapse Wireless, Inc.
+# Echo Test Example Futures - Basic echo example using SNAPconnect Futures
+
+`Echo Test Example Futures` is a straight-forward example project that sends message payloads to a node
+and expects to get those messages echoed back.
 
 ## Background
 
