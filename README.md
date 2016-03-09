@@ -4,8 +4,7 @@
 
 ## Background
 
-
-Many SNAP Connect applications tend to follow a standard format:
+Many SNAPconnect applications tend to follow a standard format:
 
 1. A SNAP Node has some kind of valuable data that needs to be collected. 
 1. Create a callback method to handle collected/polled data from a node.
@@ -16,29 +15,28 @@ Many SNAP Connect applications tend to follow a standard format:
 Problem: It can be confusing as to what is actually happening, especially if you 
 are viewing source code that you didn't write.  Traditional implementations are
 very reliant on state-machines since everything has to be event-driven, as well.
-In most cases, as soon as you get past the simplest applications the complexity 
-of your applications will begin to balloon drastically.  Once you add in other
+In most cases, as soon as you get past the simplest applications, the complexity 
+of your applications will begin to expand drastically.  Once you add in other
 mechanisms such as retries/timeouts and dropped package handling, it's easy to 
 see how even relatively simple applications can become more complex over time.
 
-Solution: Use Futures to simulate a more synchronous environment where you can 
-simply wait for data to be returned.  SNAP Connect Futures also has built-in 
+Solution: Use Futures to simulate a synchronous environment where you can 
+simply wait for data to be returned.  SNAPconnect Futures also has built-in 
 retry/timeout mechanisms to help provide more reliable communications with less 
 overhead. This lends itself to creating much more straight-forward code which, 
 in turn, means faster iteration and easier bug-fixes in the future.
 
-
-Many SNAP Connect applications want to gather data from the remote nodes as quickly
+Many SNAPconnect applications are built to gather data from the remote nodes as quickly
 as possible.
 
-Here are some approaches that DON'T work well.
+Here are some approaches that **don't** work well.
 
-1) Blindly enqueueing RPC calls
+#### Blindly enqueueing RPC calls
 
 Since the packets have to be transferred "out" via either a serial or TCP/IP link,
 blindly enqueueing lots of RPC calls just queues them up INSIDE your PC.
 
-2) Queueing RPC calls based on HOOK_RPC_SENT, but with no regard for incoming replies
+#### Queueing RPC calls based on HOOK_RPC_SENT, but with no regard for incoming replies
 
 If you are sending COMMANDS (no return RPC call), triggering their transmission off
 of the HOOK_RPC_SENT event is sufficient. However, if those outbound RPC calls are
