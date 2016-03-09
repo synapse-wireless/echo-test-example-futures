@@ -45,6 +45,15 @@ of the HOOK_RPC_SENT event is sufficient. However, if those outbound RPC calls a
 going to result in INCOMING RPC calls, you need to give the remote nodes a chance to 
 "get a word in edgewise".
 
+## Installation
+
+First, download the example, either by cloning the repo with git, or by downloading the zip archive.
+Then, using pip, install the required Python packages for the example, which include SNAPconnect Futures:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Running EchoTestFutures.py
 
 All configuration for this example is done by changing hardcoded values near the top
