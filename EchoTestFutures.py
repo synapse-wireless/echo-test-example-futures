@@ -27,7 +27,6 @@ SERIAL_TYPE = snap.SERIAL_TYPE_RS232
 # An example for a typical interface device is shown below
 SERIAL_PORT = 0  # COM1
 # SERIAL_PORT = '/dev/ttyUSB0'
-BRIDGE_NODE = "627d43" # <- Replace this with the address of your bridge node
 
 NUMBER_OF_QUERIES = 100  # More polls == longer test
 TIMEOUT = 1.0  # (in seconds) You might need to increase this if:
@@ -58,7 +57,8 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
     :param scf: snapconnect-future you want to use
     """
 
-    scf = yield SnapConnectFuturesAuto(port_id=SERIAL_PORT, port_type=SERIAL_TYPE)
+    scf = SnapConnectFuturesAuto()
+    bridge_node = yield scf.open_serial(port_type, port_no)
     # set up to start sending queries to our bridge node
     replies = 0
     # start the clock!
@@ -66,7 +66,7 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
     # start sending queries
     for queries in range(num_queries):
         # we'll use the built in 'str' func to call back
-        result = yield scf.callback_rpc(BRIDGE_NODE, 'str', args=(payload,), retries=3, timeout=timeout)
+        result = yield scf.callback_rpc(bridge_node, 'str', args=(payload,), retries=3, timeout=timeout)
         if result != (PAYLOAD,):
             log.error("we did not receive the correct response %r" % result)
         else:
