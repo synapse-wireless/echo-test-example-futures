@@ -27,7 +27,6 @@ SERIAL_TYPE = snap.SERIAL_TYPE_RS232
 # An example for a typical interface device is shown below
 SERIAL_PORT = 0  # COM1
 # SERIAL_PORT = '/dev/ttyUSB0'
-BRIDGE_NODE = "627d43" # <- Replace this with the address of your bridge node
 
 NUMBER_OF_QUERIES = 100  # More polls == longer test
 TIMEOUT = 1.0  # (in seconds) You might need to increase this if:
