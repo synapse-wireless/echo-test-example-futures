@@ -1,55 +1,55 @@
 [![](https://cloud.githubusercontent.com/assets/1317406/12406044/32cd9916-be0f-11e5-9b18-1547f284f878.png)](http://www.synapse-wireless.com/)
 
-# Echo Test Example Futures - Basic echo example using SNAPconnect Futures
+# Echo Test Example Futures — Basic echo example using SNAP Connect Futures
 
 `Echo Test Example Futures` is a straight-forward example project that sends message payloads to a node
 and expects to get those messages echoed back.
 
 ## Background
 
-Many SNAPconnect applications tend to follow a standard format:
+Many SNAP Connect applications tend to follow a standard format:
 
-1. A SNAP Node has some kind of valuable data that needs to be collected. 
-1. Create a callback method to handle collected/polled data from a node.
-1. Send callback rpc to the node and wait for a response.
-1. Response triggers the callback method which kicks off subsequent events.
+1. A SNAP Node has some kind of valuable data that needs to be collected.
+1. Create a method on the node to collect and return polled data.
+1. Send callback RPC to the node and wait for a response.
+1. The node's callback response triggers the SNAP Connect method, which 
+kicks off subsequent events.
 1. Repeat ad infinitum.
 
-Problem: It can be confusing as to what is actually happening, especially if you 
-are viewing source code that you didn't write.  Traditional implementations are
-very reliant on state-machines since everything has to be event-driven, as well.
-In most cases, as soon as you get past the simplest applications, the complexity 
-of your applications will begin to expand drastically.  Once you add in other
-mechanisms such as retries/timeouts and dropped package handling, it's easy to 
-see how even relatively simple applications can become more complex over time.
+There are two significant challenges with this:
 
-Solution: Use Futures to simulate a synchronous environment where you can 
-simply wait for data to be returned.  SNAPconnect Futures also has built-in 
-retry/timeout mechanisms to help provide more reliable communications with less 
-overhead. This lends itself to creating much more straight-forward code which, 
-in turn, means faster iteration and easier bug-fixes in the future.
+ * The first is that maximizing throughput is difficult, since having 
+your host send messages out to poll your nodes as quickly as it can 
+doesn't leave any bandwidth available for receiving replies from the 
+nodes it is polling. Queueing RPC calls to query nodes as quickly as the 
+host can generate them gets the messages queued for output (until you 
+run out of buffers), but doesn't send the messages efficiently. 
+Triggering the sending of RPC calls from the RPC_SENT hook improves the 
+system efficiency, but still leaves no bandwidth for the host to receive 
+replies from the nodes it is polling.
+ * The second is that managing the sending and receiving of messages 
+typically requires setting up event-driven state machines, which can 
+make your code complex, difficult to understand, and even harder to
+maintain. By the time you add in other mechanisms, such as retries or 
+timeouts, or recovery from dropped packets, even relatively simple
+applications can grow unwieldy very quickly.
 
-Many SNAPconnect applications are built to gather data from the remote nodes as quickly
-as possible.
+The Futures package for SNAP Connect solves these problems by simulating 
+a synchronous environment when you can simply wait for data to be 
+returned. SNAP Connect Futures also has built-in retry/timeout 
+mechanisms to help provide more reliable communications with less
+overhead. This lends itself to creating much more straight-forward code 
+which, in turn, means faster development and easier bug-fixes in the 
+future.
 
-Here are some approaches that **don't** work well.
-
-#### Blindly enqueueing RPC calls
-
-Since the packets have to be transferred "out" via either a serial or TCP/IP link,
-blindly enqueueing lots of RPC calls just queues them up INSIDE your PC.
-
-#### Queueing RPC calls based on HOOK_RPC_SENT, but with no regard for incoming replies
-
-If you are sending COMMANDS (no return RPC call), triggering their transmission off
-of the HOOK_RPC_SENT event is sufficient. However, if those outbound RPC calls are
-going to result in INCOMING RPC calls, you need to give the remote nodes a chance to 
-"get a word in edgewise".
+This demonstration script, `EchoTestFutures.py`, gives an example of 
+using the SNAP Connect Futures library to query a node (or several 
+nodes) repeatedly as quickly as your host can.
 
 ## Installation
 
-First, download the example, either by cloning the repo with git, or by downloading the zip archive.
-Then, using pip, install the required Python packages for the example, which include SNAPconnect Futures:
+First, download the example, either by cloning the repository with Git, or by downloading and unzipping the zip archive.
+Then, using pip, install the required Python packages for the example, which include SNAP Connect Futures:
 
 ```bash
 pip install -r requirements.txt
@@ -62,7 +62,7 @@ of the `EchoTestFutures.py`, for example:
 
 #### What serial interface do you want to use to reach your bridge node?
 
-You will need to modify `SERIAL_TYPE` and `SERIAL_PORT` based on what type of bridge node you have:
+You will need to modify `SERIAL_TYPE` and `SERIAL_PORT` based on which type of bridge node you have:
 
 ```python
 # You should set these to match YOUR available hardware
@@ -95,6 +95,11 @@ Permanent license created on 2012-02-14 14:14:45.343000 for 000020
 100 queries, 100 responses in 6903 milliseconds
 SUCCESS!
 ```
+
+The nature and configuration of your network will affect the rate at 
+which you can process polls in your environment. But using SNAP Connect 
+Futures should keep your application as efficient as possible, and it 
+should keep your code easy to understand and easy to maintain.
 
 For more details, refer to source file `EchoTestFutures.py`
 
