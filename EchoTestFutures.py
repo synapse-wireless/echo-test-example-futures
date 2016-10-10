@@ -84,7 +84,7 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
 
 
 if __name__ == "__main__":
-    # Notice that because this is a benchmark, we have set logging to the lowest verbose level
+    # Notice that because this is a benchmark, we have set logging to the INFO level
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
     # start the IOLoop, run_echo_test() and then stop the loop
