@@ -1,6 +1,6 @@
 # (c) Copyright 2016 Synapse Wireless, Inc.
 """
-EchoTestFutures.py - a simple benchmark used to determine how fast SNAP Connect can
+EchoTestFutures.py - a simple benchmark used to determine how fast SNAPconnect can
 communicate with a directly connected bridge. We use this to evaluate different
 Python platforms, implementations, and serial drivers.
 
@@ -37,7 +37,7 @@ TIMEOUT = 1.0  # (in seconds) You might need to increase this if:
 # 2) You are benchmarking a remote node, and it is so many hops away that 1 second is too short.
 
 # You could experiment with various size payloads.
-# Note that PAYLOAD is just one of several parameters to the actual RPC call
+# Note that PAYLOAD is just one of several parameters to the actual RPC call.
 # PAYLOAD = "A"
 # PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
@@ -47,7 +47,7 @@ PAYLOAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=<({[]
 @coroutine
 def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
                   num_queries=NUMBER_OF_QUERIES, payload=PAYLOAD, timeout=TIMEOUT, scf=None):
-    """Simple benchmark. Create a SNAP Connect instance, and use it to send a batch of RPC calls
+    """Simple benchmark. Create a SNAPconnect instance, and use it to send a batch of RPC calls.
 
     :param port_type: type of serial port eg SERIAL_TYPE_RS232
     :param port_no: serial port number, could be 0 for COM1 or /dev/ttyS1 in Linux
@@ -84,7 +84,7 @@ def run_echo_test(port_type=SERIAL_TYPE, port_no=SERIAL_PORT,
 
 
 if __name__ == "__main__":
-    # Notice that because this is a benchmark, we have set logging to of the lowest verbose levels
+    # Notice that because this is a benchmark, we have set logging to the INFO level
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
     # start the IOLoop, run_echo_test() and then stop the loop

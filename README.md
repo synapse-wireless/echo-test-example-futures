@@ -1,13 +1,13 @@
 [![](https://cloud.githubusercontent.com/assets/1317406/12406044/32cd9916-be0f-11e5-9b18-1547f284f878.png)](http://www.synapse-wireless.com/)
 
-# Echo Test Example Futures — Basic echo example using SNAP Connect Futures
+# Echo Test Example Futures — Basic echo example using SNAPconnect Futures
 
 `Echo Test Example Futures` is a straight-forward example project that sends message payloads to a node
 and expects to get those messages echoed back.
 
 ## Background
 
-Many SNAP Connect applications tend to follow a standard format:
+Many SNAPconnect applications tend to follow a standard format:
 
 1.  A SNAP Node has some kind of valuable data that needs to be collected.
 
@@ -15,7 +15,7 @@ Many SNAP Connect applications tend to follow a standard format:
 
 1.  Send callback RPC to the node and wait for a response.
 
-1.  The node's callback response triggers the SNAP Connect method, which 
+1.  The node's callback response triggers the SNAPconnect method, which
     kicks off subsequent events.
 
 1.  Repeat ad infinitum.
@@ -39,22 +39,22 @@ There are two significant challenges with this:
     timeouts, or recovery from dropped packets, even relatively simple
     applications can grow unwieldy very quickly.
 
-The Futures package for SNAP Connect solves these problems by simulating 
+The Futures package for SNAPconnect solves these problems by simulating
 a synchronous environment when you can simply wait for data to be 
-returned. SNAP Connect Futures also has built-in retry/timeout 
+returned. SNAPconnect Futures also has built-in retry/timeout
 mechanisms to help provide more reliable communications with less
 overhead. This lends itself to creating much more straight-forward code 
 which, in turn, means faster development and easier bug-fixes in the 
 future.
 
 This demonstration script, `EchoTestFutures.py`, gives an example of 
-using the SNAP Connect Futures library to query a node (or several 
+using the SNAPconnect Futures library to query a node (or several
 nodes) repeatedly as quickly as your host can.
 
 ## Installation
 
 First, download the example, either by cloning the repository with Git, or by downloading and unzipping the zip archive.
-Then, using pip, install the required Python packages for the example, which include SNAP Connect Futures:
+Then, using pip, install the required Python packages for the example, which include SNAPconnect Futures:
 
 ```bash
 pip install -r requirements.txt
@@ -102,7 +102,7 @@ SUCCESS!
 ```
 
 The nature and configuration of your network will affect the rate at 
-which you can process polls in your environment. But using SNAP Connect 
+which you can process polls in your environment. But using SNAPconnect
 Futures should keep your application as efficient as possible, and it 
 should keep your code easy to understand and easy to maintain.
 
